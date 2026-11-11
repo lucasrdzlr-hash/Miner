@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "ApuItem": {
+      "title": "ApuItem",
+      "description": "Análisis de Precio Unitario (APU) para rubros de construcción",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "code": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 128 },
+        "unit": { "type": "string", "maxLength": 32 },
+        "description": { "type": "string", "maxLength": 2048 },
+        "overheadPercent": { "type": "number" },
+        "profitPercent": { "type": "number" },
+        "taxPercent": { "type": "number" },
+        "lastUpdated": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "code", "name", "category", "unit"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Obra o proyecto de construcción con presupuesto y avance",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "code": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 256 },
+        "client": { "type": "string", "maxLength": 256 },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "endDate": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["planning", "in_progress", "paused", "completed"] },
+        "currency": { "type": "string", "maxLength": 16 },
+        "lastSyncedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "code", "name", "status"]
+    },
+    "DailyLog": {
+      "title": "DailyLog",
+      "description": "Parte diario de obra con dotación, avance físico y fotos georreferenciadas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "generalNotes": { "type": "string", "maxLength": 4096 }
+      },
+      "required": ["id", "projectId", "date"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Cuenta de usuario del sistema (administrador, cliente, tecnico, capataz)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "role": { "type": "string", "enum": ["admin", "client", "technician", "foreman"] },
+        "roleLabel": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "ForemanNotification": {
+      "title": "ForemanNotification",
+      "description": "Notificación y alerta de obra",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "message": { "type": "string", "maxLength": 2048 },
+        "date": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "maxLength": 64 },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["id", "projectId", "title", "message"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Colección de obras y proyectos de construcción"
+    },
+    "/projects/{projectId}/dailyLogs/{dailyLogId}": {
+      "schema": "DailyLog",
+      "description": "Partes diarios de avance y fotos de la obra"
+    },
+    "/apuLibrary/{apuId}": {
+      "schema": "ApuItem",
+      "description": "Librería centralizada de análisis de precios unitarios"
+    },
+    "/users/{userId}": {
+      "schema": "UserAccount",
+      "description": "Perfiles de usuarios y roles"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "ForemanNotification",
+      "description": "Notificaciones del sistema de gestión de obra"
+    }
+  }
+}

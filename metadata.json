@@ -1,0 +1,6 @@
+{
+  "name": "Prisma by AKME",
+  "description": "Plataforma integral de APU, Cómputos, Presupuestos, Control de Campañas de Perforación, Pozos, Minería y Energía con Visor 4D Estratigráfico.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

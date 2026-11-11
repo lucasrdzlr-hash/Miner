@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common security helpers
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Projects collection
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId);
+      allow list: if true;
+      allow create, update: if isValidId(projectId)
+        && incoming().id is string
+        && incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 256;
+      allow delete: if isValidId(projectId);
+
+      // Subcollection: Daily logs with advance photos
+      match /dailyLogs/{dailyLogId} {
+        allow get: if isValidId(dailyLogId);
+        allow list: if true;
+        allow create, update: if isValidId(dailyLogId)
+          && incoming().id is string
+          && incoming().projectId is string
+          && incoming().date is string;
+        allow delete: if isValidId(dailyLogId);
+      }
+    }
+
+    // APU Library collection
+    match /apuLibrary/{apuId} {
+      allow get: if isValidId(apuId);
+      allow list: if true;
+      allow create, update: if isValidId(apuId)
+        && incoming().id is string
+        && incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 256
+        && incoming().category is string;
+      allow delete: if isValidId(apuId);
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      allow list: if true;
+      allow create, update: if isValidId(userId)
+        && incoming().id is string
+        && incoming().name is string;
+      allow delete: if isValidId(userId);
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow get: if isValidId(notificationId);
+      allow list: if true;
+      allow create, update: if isValidId(notificationId)
+        && incoming().id is string
+        && incoming().title is string;
+      allow delete: if isValidId(notificationId);
+    }
+  }
+}
